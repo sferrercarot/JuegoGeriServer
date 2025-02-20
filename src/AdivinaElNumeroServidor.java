@@ -12,42 +12,74 @@ public class AdivinaElNumeroServidor {
         System.out.print("Jugador 2, introduce tu nombre: ");
         String jugador2 = scanner.nextLine();
 
-        System.out.print(jugador1 + ", introduce un número: ");
-        int num1 = scanner.nextInt();
+        System.out.print(jugador1 + ", elige el número de rondas (3, 5 o 10): ");
+        int rondasJ1 = scanner.nextInt();
 
-        System.out.print(jugador2 + ", introduce un número: ");
-        int num2 = scanner.nextInt();
+        System.out.print(jugador2 + ", elige el número de rondas (3, 5 o 10): ");
+        int rondasJ2 = scanner.nextInt();
 
-        // Determinar el rango
-        int min = Math.min(num1, num2);
-        int max = Math.max(num1, num2);
+        int rondas = (rondasJ1 + rondasJ2) / 2;
+        System.out.println("Se jugará al mejor de " + rondas + " rondas.");
 
-        // Generar número aleatorio dentro del rango
-        int numeroSecreto = random.nextInt(max - min + 1) + min;
+        int puntajeJ1 = 0, puntajeJ2 = 0;
+        int rondasNecesarias = (rondas / 2) + 1;
+        boolean turnoJugador1 = true;
+        boolean turnoAdivinarJugador1 = true;
 
-        System.out.println("Se ha generado un número secreto entre " + min + " y " + max);
+        for (int i = 0; i < rondas; i++) {
+            String jugadorQueElige = turnoJugador1 ? jugador1 : jugador2;
+            System.out.print(jugadorQueElige + ", introduce un número: ");
+            int num1 = scanner.nextInt();
 
-        boolean adivinado = false;
-        int turno = 1;
+            jugadorQueElige = turnoJugador1 ? jugador2 : jugador1;
+            System.out.print(jugadorQueElige + ", introduce un número: ");
+            int num2 = scanner.nextInt();
 
-        while (!adivinado) {
-            String jugadorActual = (turno == 1) ? jugador1 : jugador2;
-            System.out.print(jugadorActual + ", intenta adivinar el número: ");
-            int intento = scanner.nextInt();
+            int min = Math.min(num1, num2);
+            int max = Math.max(num1, num2);
+            int numeroSecreto = random.nextInt(max - min + 1) + min;
 
-            if (intento == numeroSecreto) {
-                System.out.println("¡Felicidades, " + jugadorActual + "! Has adivinado el número.");
-                adivinado = true;
-            } else if (intento < numeroSecreto) {
-                System.out.println("El número es mayor.");
-            } else {
-                System.out.println("El número es menor.");
+            System.out.println("Ronda " + (i + 1) + " - Se ha generado un número secreto entre " + min + " y " + max);
+
+            boolean adivinado = false;
+            int turno = turnoAdivinarJugador1 ? 1 : 2;
+
+            while (!adivinado) {
+                String jugadorActual = (turno == 1) ? jugador1 : jugador2;
+                System.out.print(jugadorActual + ", intenta adivinar el número: ");
+                int intento = scanner.nextInt();
+
+                if (intento == numeroSecreto) {
+                    System.out.println("¡Felicidades, " + jugadorActual + "! Has ganado esta ronda.");
+                    if (turno == 1) {
+                        puntajeJ1++;
+                        turnoJugador1 = false;
+                        turnoAdivinarJugador1 = false;
+                    } else {
+                        puntajeJ2++;
+                        turnoJugador1 = true;
+                        turnoAdivinarJugador1 = true;
+                    }
+                    adivinado = true;
+                } else if (intento < numeroSecreto) {
+                    System.out.println("El número es mayor.");
+                } else {
+                    System.out.println("El número es menor.");
+                }
+
+                turno = (turno == 1) ? 2 : 1;
             }
 
-            // Cambiar turno
-            turno = (turno == 1) ? 2 : 1;
+            if (puntajeJ1 >= rondasNecesarias) {
+                System.out.println("¡" + jugador1 + " ha ganado la partida!");
+                break;
+            } else if (puntajeJ2 >= rondasNecesarias) {
+                System.out.println("¡" + jugador2 + " ha ganado la partida!");
+                break;
+            }
         }
 
+        System.out.println("Puntaje final: " + jugador1 + " - " + puntajeJ1 + " | " + jugador2 + " - " + puntajeJ2);
         scanner.close();
     }
 }
